@@ -38,4 +38,4 @@ msbuild.wrn
 
 # Custom
 Json
-.csv
+*.csv

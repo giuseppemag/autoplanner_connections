@@ -70,16 +70,30 @@ namespace AutoplannerConnections
             request.AddParameter("q[name]", $"*{name}*");
 
             IRestResponse response = this.client.Execute(request);
-            dynamic responsObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
+            dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
-            try {
-                return responsObject["data"][0]["id"];
-            } catch {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Could not find the Simplicate id for employee name '{name}'");
-                Console.ResetColor();
-                return "";
+            string employeeId = null;
+            bool multipleNames = false;
+
+            foreach (var employee in responseObject["data"]) {
+                if (employeeId != null) 
+                    multipleNames = true;
+                employeeId = employee["id"];
             }
+
+            if (employeeId == null) {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Could not find the Teamweek id for employee name '{name}'");
+                Console.ResetColor();
+                return null;
+            } else if (multipleNames) {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Multiple employees have the name '{name}'");
+                Console.ResetColor();
+                return null;
+            }
+
+            return employeeId;
         }
 
         /// <summary>

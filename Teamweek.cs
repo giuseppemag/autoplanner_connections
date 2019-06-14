@@ -66,14 +66,29 @@ namespace AutoplannerConnections
             IRestResponse response = client.Execute(request);
             var responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
+            int employeeId = -1;
+            bool multipleNames = false;
+
             foreach (var employee in responseObject)
                 if (((string)employee["name"]).ToString().ToLower().Replace(" ", "").Contains(name.ToLower().Replace(" ", "")))
-                    return employee["id"];
+                    if (employeeId == -1)
+                        employeeId = employee["id"];
+                    else
+                        multipleNames = true;
 
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Could not find the Teamweek id for employee name '{name}'");
-            Console.ResetColor();
-            return -1;
+            if (employeeId == -1) {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Could not find the Teamweek id for employee name '{name}'");
+                Console.ResetColor();
+                return -1;
+            } else if (multipleNames) {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Multiple employees have the name '{name}'");
+                Console.ResetColor();
+                return -1;
+            }
+
+            return employeeId;
         }
 
         public int ProjectNameToId (string name, Config config) 
