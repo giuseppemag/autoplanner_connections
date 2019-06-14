@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using RestSharp;
 
 namespace AutoplannerConnections
 {
@@ -13,42 +12,22 @@ namespace AutoplannerConnections
 
         static void Main(string[] args) 
         {
-
-            Teamweek.client = new RestClient("https://teamweek.com");
             jsonData = new Data(fromJson: true);
 
             teamweek = new Teamweek();
             simplicate = new Simplicate();
-
-            // Delete teamweek tasks that are in the teamweekTask.json list
-            List<int> tempTeamweekIds = new List<int>();
-            tempTeamweekIds.AddRange(jsonData.teamweekTaskIds);
-            foreach (int item in tempTeamweekIds) {
-                if (teamweek.RemoveTeamweekTask(item, jsonData.config)) {
-                    jsonData.teamweekTaskIds.Remove(item);
-                }
-            }
-
-            // Delete simplicate tasks that are in the simplicateTask.json list
-            List<string> tempSimplicateIds = new List<string>();
-            tempSimplicateIds.AddRange(jsonData.simplicateTaskIds);
-            foreach (var item in tempSimplicateIds) {
-                if (simplicate.RemoveHours(item)) {
-                    jsonData.simplicateTaskIds.Remove(item);
-                }
-            }
 
             // Needs to be called at least once every 2 weeks (before refresh token expires and is unusable)
             teamweek.RefreshAccessToken(ref jsonData.config);
 
             Data planningData = ReadPlanning();
             jsonData.tasks.Clear();
-            // foreach (Task task in planningData.tasks) {
-            //     Task tempTask = new Task();
-            //     tempTask.simplicateId = simplicate.AddHours(task);
-            //     tempTask.teamweekId = teamweek.AddTeamweekTask(task, jsonData.config);
-            //     jsonData.tasks.Add(tempTask);
-            // }
+            foreach (Task task in planningData.tasks) {
+                Task tempTask = new Task();
+                tempTask.simplicateId = simplicate.AddHours(task);
+                tempTask.teamweekId = teamweek.AddTeamweekTask(task, jsonData.config);
+                jsonData.tasks.Add(tempTask);
+            }
 
             Data tempData = jsonData;
 

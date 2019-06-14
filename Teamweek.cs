@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -10,7 +7,11 @@ namespace AutoplannerConnections
     class Teamweek
     {
 
-        public static RestClient client;
+        public RestClient client;
+
+        public Teamweek () {
+            client = new RestClient("https://teamweek.com");
+        }
 
         public int AddTeamweekTask (Task task, Config config) 
         {
@@ -28,7 +29,7 @@ namespace AutoplannerConnections
                 if (task.project != null && task.project.teamweekId > 0)
                     request.AddParameter("project_id", task.project.teamweekId.ToString());
 
-                IRestResponse response = Teamweek.client.Execute(request);
+                IRestResponse response = client.Execute(request);
                 dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
                 return (int)responseObject["id"];
             }
@@ -40,7 +41,7 @@ namespace AutoplannerConnections
             var request = new RestRequest($"api/v4/147174/tasks/{taskId}", Method.DELETE);
             request.AddParameter("access_token", config.twAccessToken);
 
-            IRestResponse response = Teamweek.client.Execute(request);
+            IRestResponse response = client.Execute(request);
             return response.IsSuccessful || response.StatusDescription == "Not Found";
         }
 
@@ -51,7 +52,7 @@ namespace AutoplannerConnections
             request.AddParameter("grant_type", "refresh_token");
             request.AddParameter("refresh_token", config.twRefreshToken);
 
-            IRestResponse response = Teamweek.client.Execute(request);
+            IRestResponse response = client.Execute(request);
             var responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
             config.twAccessToken = responseObject["access_token"];
             config.twRefreshToken = responseObject["refresh_token"];
@@ -62,7 +63,7 @@ namespace AutoplannerConnections
             var request = new RestRequest($"api/v4/147174/members?access_token={config.twAccessToken}");
             request.AddHeader("authorization", $"Bearer {config.twAccessToken}");
 
-            IRestResponse response = Teamweek.client.Execute(request);
+            IRestResponse response = client.Execute(request);
             var responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
             foreach (var employee in responseObject)
@@ -80,7 +81,7 @@ namespace AutoplannerConnections
             var request = new RestRequest($"api/v4/147174/projects?access_token={config.twAccessToken}");
             request.AddHeader("authorization", $"Bearer {config.twAccessToken}");
 
-            IRestResponse response = Teamweek.client.Execute(request);
+            IRestResponse response = client.Execute(request);
             var responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
             foreach (var project in responseObject) 

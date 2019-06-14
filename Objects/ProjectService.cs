@@ -5,7 +5,7 @@ namespace AutoplannerConnections
     class ProjectService
     {
         public string id {get; set;}
-        public string name {get; set;} // [absence, ]
+        public string name {get; set;}
         public List<HoursType> hoursTypes {get; set;}
     }
 }
