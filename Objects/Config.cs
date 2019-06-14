@@ -1,8 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
-using RestSharp;
-
 namespace AutoplannerConnections
 {
     class Config

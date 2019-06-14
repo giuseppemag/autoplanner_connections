@@ -41,7 +41,7 @@ namespace AutoplannerConnections
             request.AddParameter("access_token", config.twAccessToken);
 
             IRestResponse response = Teamweek.client.Execute(request);
-            return response.IsSuccessful;
+            return response.IsSuccessful || response.StatusDescription == "Not Found";
         }
 
         public void RefreshAccessToken(ref Config config)

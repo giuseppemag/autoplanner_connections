@@ -15,9 +15,6 @@ namespace AutoplannerConnections
         public Simplicate () 
         {
             client = new RestClient("https://hoppingerdemo2.simplicate.nl");
-
-            GetProjects();
-            GetProjectServices("project:f0bda8c63005f5d5152ff8f695efdc4c");
         }
 
         public string AddHours (Task task) 
@@ -33,7 +30,7 @@ namespace AutoplannerConnections
                     project_id          = "project:d906c8651701f4304c13c77ab857ae53",   // Todo: Make this value non-static
                     projectservice_id   = "service:b1df599786b3076dbf0d1878087571b9",   // Todo: Make this value non-static
                     type_id             = "hourstype:36e980b8e87bd4a3ca9dc23db773baf0", // Todo: Make this value non-static
-                    approvalstatus_id   = "approvalstatus:c50aea8b97ac61db",            // Add hours as it has yet to be approved
+                    approvalstatus_id   = "approvalstatus:c50aea8b97ac61db",
                     hours               = task.hours,
                     start_date          = task.start.ToString("yyyy-MM-dd HH:mm:ss"),
                     end_date            = task.end.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -58,9 +55,8 @@ namespace AutoplannerConnections
             request.AddHeader("Authentication-Key",     "guF5DqZqJ8cDxtKe29G6VQjg8pZwN2zT");
             request.AddHeader("Authentication-Secret",  "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K");
 
-            IRestResponse response = Teamweek.client.Execute(request);
-            return response.IsSuccessful;
-
+            IRestResponse response = client.Execute(request);
+            return response.IsSuccessful || response.StatusDescription == "Not Found";
         }
 
         /// <summary>
@@ -113,7 +109,7 @@ namespace AutoplannerConnections
             }
         }
 
-        public void GetProjects () 
+        public List<Project> GetProjects () 
         {
             var request = new RestRequest($"api/v2/projects/project", Method.GET);
 
@@ -122,9 +118,15 @@ namespace AutoplannerConnections
 
             IRestResponse response = this.client.Execute(request);
             dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
+            List<Project> projects = new List<Project>();
+            foreach (var project in responseObject["data"])
+            {
+                projects.Add(new Project() {simplicateId = project["id"], name = project["organization"]["name"]});
+            }
+            return projects;
         }
 
-        public void GetProjectServices (string id) 
+        public List<ProjectService> GetProjectServices (string id) 
         {
             var request = new RestRequest($"api/v2/projects/service", Method.GET);
 
@@ -136,6 +138,27 @@ namespace AutoplannerConnections
 
             IRestResponse response = this.client.Execute(request);
             dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
+            List<ProjectService> projectServices = new List<ProjectService>();
+            foreach (var projectService in responseObject["data"])
+            {
+                ProjectService projectServiceObject = new ProjectService() {
+                    id = projectService["id"],
+                    name = projectService["name"],
+                    hoursTypes = new List<HoursType>()
+                };
+
+                try {
+                    foreach (var hoursType in projectService["hour_types"])
+                    {
+                        projectServiceObject.hoursTypes.Add(new HoursType() {
+                            id = hoursType["hourstype"]["id"], 
+                            type = hoursType["hourstype"]["type"], 
+                            label = hoursType["hourstype"]["label"]
+                        });
+                    }
+                } catch {}
+            }
+            return null;
         }
     }
 }

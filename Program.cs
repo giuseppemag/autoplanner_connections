@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Buffers.Text;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 using RestSharp;
 
 namespace AutoplannerConnections
@@ -28,6 +20,7 @@ namespace AutoplannerConnections
             teamweek = new Teamweek();
             simplicate = new Simplicate();
 
+            // Delete teamweek tasks that are in the teamweekTask.json list
             List<int> tempTeamweekIds = new List<int>();
             tempTeamweekIds.AddRange(jsonData.teamweekTaskIds);
             foreach (int item in tempTeamweekIds) {
@@ -36,6 +29,7 @@ namespace AutoplannerConnections
                 }
             }
 
+            // Delete simplicate tasks that are in the simplicateTask.json list
             List<string> tempSimplicateIds = new List<string>();
             tempSimplicateIds.AddRange(jsonData.simplicateTaskIds);
             foreach (var item in tempSimplicateIds) {
@@ -49,12 +43,12 @@ namespace AutoplannerConnections
 
             Data planningData = ReadPlanning();
             jsonData.tasks.Clear();
-            foreach (Task task in planningData.tasks) {
-                Task tempTask = new Task();
-                tempTask.simplicateId = simplicate.AddHours(task);
-                tempTask.teamweekId = teamweek.AddTeamweekTask(task, jsonData.config);
-                jsonData.tasks.Add(tempTask);
-            }
+            // foreach (Task task in planningData.tasks) {
+            //     Task tempTask = new Task();
+            //     tempTask.simplicateId = simplicate.AddHours(task);
+            //     tempTask.teamweekId = teamweek.AddTeamweekTask(task, jsonData.config);
+            //     jsonData.tasks.Add(tempTask);
+            // }
 
             Data tempData = jsonData;
 
@@ -107,6 +101,7 @@ namespace AutoplannerConnections
                         break;
 
                     for (int i = 3; i < line.Length; i++) {
+                        
                         string[] taskString = line[i].Split('/');
                         if (taskString.Length > 1) {
 
