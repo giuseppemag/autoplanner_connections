@@ -1,0 +1,34 @@
+Day,Start time,End time, Mustafa, Naomi, Susan, Pavel, Cristina
+01/01/2019,09:00:00,12:00:00,12-None/SelfDevelopment,5-KWF/VisualDesign,7-DeBeren/VisualDesign,12-None/SelfDevelopment,2-KWF/Architecture
+01/01/2019,12:30:00,15:30:00,12-None/SelfDevelopment,5-KWF/VisualDesign,reservering,10-DeBeren/Sql,2-KWF/Architecture
+02/01/2019,09:00:00,12:00:00,12-None/SelfDevelopment,5-KWF/VisualDesign,7-DeBeren/VisualDesign,10-DeBeren/Sql,6-DeBeren/Architecture
+02/01/2019,12:30:00,15:30:00,12-None/SelfDevelopment,5-KWF/VisualDesign,7-DeBeren/VisualDesign,10-DeBeren/Sql,6-DeBeren/Architecture
+03/01/2019,09:00:00,12:00:00,12-None/SelfDevelopment,12-None/SelfDevelopment,reservering,10-DeBeren/Sql,6-DeBeren/Architecture
+03/01/2019,12:30:00,15:30:00,12-None/SelfDevelopment,12-None/SelfDevelopment,7-DeBeren/VisualDesign,10-DeBeren/Sql,6-DeBeren/Architecture
+04/01/2019,09:00:00,12:00:00,12-None/SelfDevelopment,12-None/SelfDevelopment,7-DeBeren/VisualDesign,10-DeBeren/Sql,12-None/SelfDevelopment
+04/01/2019,12:30:00,15:30:00,12-None/SelfDevelopment,12-None/SelfDevelopment,7-DeBeren/VisualDesign,10-DeBeren/Sql,10-DeBeren/Sql
+05/01/2019,09:00:00,12:00:00,12-None/SelfDevelopment,12-None/SelfDevelopment,12-None/SelfDevelopment,10-DeBeren/Sql,reservering
+05/01/2019,12:30:00,15:30:00,12-None/SelfDevelopment,12-None/SelfDevelopment,12-None/SelfDevelopment,10-DeBeren/Sql,10-DeBeren/Sql
+06/01/2019,09:00:00,12:00:00,12-None/SelfDevelopment,12-None/SelfDevelopment,12-None/SelfDevelopment,10-DeBeren/Sql,4-KWF/TypescriptReact
+06/01/2019,12:30:00,15:30:00,12-None/SelfDevelopment,12-None/SelfDevelopment,12-None/SelfDevelopment,10-DeBeren/Sql,4-KWF/TypescriptReact
+07/01/2019,09:00:00,12:00:00,12-None/SelfDevelopment,12-None/SelfDevelopment,11-DeBeren/Css,10-DeBeren/Sql,4-KWF/TypescriptReact
+07/01/2019,12:30:00,15:30:00,12-None/SelfDevelopment,12-None/SelfDevelopment,11-DeBeren/Css,reservering,4-KWF/TypescriptReact
+08/01/2019,09:00:00,12:00:00,12-None/SelfDevelopment,12-None/SelfDevelopment,11-DeBeren/Css,9-DeBeren/DotNet,4-KWF/TypescriptReact
+08/01/2019,12:30:00,15:30:00,12-None/SelfDevelopment,12-None/SelfDevelopment,11-DeBeren/Css,9-DeBeren/DotNet,0-KWF/DotNet
+09/01/2019,09:00:00,12:00:00,9-DeBeren/DotNet,12-None/SelfDevelopment,11-DeBeren/Css,9-DeBeren/DotNet,0-KWF/DotNet
+09/01/2019,12:30:00,15:30:00,9-DeBeren/DotNet,12-None/SelfDevelopment,11-DeBeren/Css,9-DeBeren/DotNet,0-KWF/DotNet
+10/01/2019,09:00:00,12:00:00,9-DeBeren/DotNet,12-None/SelfDevelopment,11-DeBeren/Css,9-DeBeren/DotNet,0-KWF/DotNet
+10/01/2019,12:30:00,15:30:00,9-DeBeren/DotNet,12-None/SelfDevelopment,11-DeBeren/Css,9-DeBeren/DotNet,0-KWF/DotNet
+11/01/2019,09:00:00,12:00:00,8-DeBeren/TypescriptReact,1-KWF/Css,11-DeBeren/Css,9-DeBeren/DotNet,0-KWF/DotNet
+11/01/2019,12:30:00,15:30:00,8-DeBeren/TypescriptReact,1-KWF/Css,11-DeBeren/Css,8-DeBeren/TypescriptReact,3-KWF/Sql
+12/01/2019,09:00:00,12:00:00,8-DeBeren/TypescriptReact,1-KWF/Css,11-DeBeren/Css,8-DeBeren/TypescriptReact,3-KWF/Sql
+12/01/2019,12:30:00,15:30:00,8-DeBeren/TypescriptReact,1-KWF/Css,11-DeBeren/Css,8-DeBeren/TypescriptReact,3-KWF/Sql
+13/01/2019,09:00:00,12:00:00,8-DeBeren/TypescriptReact,1-KWF/Css,11-DeBeren/Css,8-DeBeren/TypescriptReact,3-KWF/Sql
+13/01/2019,12:30:00,15:30:00,8-DeBeren/TypescriptReact,1-KWF/Css,11-DeBeren/Css,8-DeBeren/TypescriptReact,3-KWF/Sql
+14/01/2019,09:00:00,12:00:00,8-DeBeren/TypescriptReact,1-KWF/Css,11-DeBeren/Css,8-DeBeren/TypescriptReact,3-KWF/Sql
+14/01/2019,12:30:00,15:30:00,8-DeBeren/TypescriptReact,1-KWF/Css,11-DeBeren/Css,8-DeBeren/TypescriptReact,3-KWF/Sql
+,,,,,,,
+Task id, Hours remaining,,,,,,
+0,"0,15",,,,,,
+8,"0,449999999999996",,,,,,
+12,"71,05",,,,,,
