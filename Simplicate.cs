@@ -15,6 +15,9 @@ namespace AutoplannerConnections
             client = new RestClient("https://hoppingerdemo2.simplicate.nl");
         }
 
+        /// <summary>
+        /// Adds the given task to the Simplicate environment
+        /// </summary>
         public string AddHours (Task task) 
         {
             var request = new RestRequest($"api/v2/hours/hours", Method.POST);
@@ -58,6 +61,9 @@ namespace AutoplannerConnections
             return "";         
         }
 
+        /// <summary>
+        /// Removes a task with the given `id`. Returns true on success
+        /// </summary>
         public bool RemoveHours (string taskId) 
         {
             var request = new RestRequest($"api/v2/hours/hours/{taskId}", Method.DELETE);
@@ -133,6 +139,9 @@ namespace AutoplannerConnections
             }
         }
 
+        /// <summary>
+        /// Returns a list of all projects in Simplicate
+        /// </summary>
         public List<Project> GetProjects () 
         {
             var request = new RestRequest($"api/v2/projects/project", Method.GET);
@@ -150,6 +159,9 @@ namespace AutoplannerConnections
             return projects;
         }
 
+        /// <summary>
+        /// Returns a list of all services in the project with the given `id`
+        /// </summary>
         public List<ProjectService> GetProjectServices (string id) 
         {
             var request = new RestRequest($"api/v2/projects/service", Method.GET);

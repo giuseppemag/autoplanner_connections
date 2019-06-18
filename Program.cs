@@ -50,6 +50,9 @@ namespace AutoplannerConnections
             jsonData.WriteToJson();
         }
 
+        /// <summary>
+        /// Reads the `plannings.csv` and returns a Data object the represents the content of the `csv` file
+        /// </summary>
         private static Data ReadPlanning () 
         {
             Data data = new Data();
@@ -154,7 +157,7 @@ namespace AutoplannerConnections
 
             return data;
         }
-
+        
         private static DateTime TimeStringToDateTime (string date, string time) 
         {
             string[] dateString = date.Split('/');

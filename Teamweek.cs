@@ -13,6 +13,9 @@ namespace AutoplannerConnections
             client = new RestClient("https://teamweek.com");
         }
 
+        /// <summary>
+        /// Adds the given task to the Teamweek environment 
+        /// </summary>
         public int AddTeamweekTask (Task task, Config config) 
         {
 
@@ -48,6 +51,10 @@ namespace AutoplannerConnections
             return response.IsSuccessful || response.StatusDescription == "Not Found";
         }
 
+        
+        /// <summary>
+        /// Needs to be called at least once every 2 weeks, to prevent the `RefreshAccessToken` to expire
+        /// </summary>
         public void RefreshAccessToken(ref Config config)
         {
             var request = new RestRequest($"api/v3/authenticate/token?grant_type=refresh_token&refresh_token={config.twRefreshToken}", Method.POST);
@@ -61,6 +68,9 @@ namespace AutoplannerConnections
             config.twRefreshToken = responseObject["refresh_token"];
         }
         
+        /// <summary>
+        /// Returns the Teamweek `id` of the employee whose name contains the given name
+        /// </summary>
         public int EmployeeNameToId (string name, Config config) 
         {
             var request = new RestRequest($"api/v4/147174/members?access_token={config.twAccessToken}");
@@ -94,6 +104,9 @@ namespace AutoplannerConnections
             return employeeId;
         }
 
+        /// <summary>
+        /// Returns the Teamweek `id` of the project which name contains the given name
+        /// </summary>
         public int ProjectNameToId (string name, Config config) 
         {
             var request = new RestRequest($"api/v4/147174/projects?access_token={config.twAccessToken}");
