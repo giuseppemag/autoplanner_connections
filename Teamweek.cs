@@ -36,6 +36,9 @@ namespace AutoplannerConnections
             return -1;
         }
 
+        /// <summary>
+        /// Removes a task with the given `id`. Returns true on success
+        /// </summary>
         public bool RemoveTeamweekTask (int taskId, Config config)
         {
             var request = new RestRequest($"api/v4/147174/tasks/{taskId}", Method.DELETE);

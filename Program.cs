@@ -20,12 +20,28 @@ namespace AutoplannerConnections
             // Needs to be called at least once every 2 weeks (before refresh token expires and is unusable)
             teamweek.RefreshAccessToken(ref jsonData.config);
 
+            List<int> teamweekTaskIds = new List<int>();
+            teamweekTaskIds.AddRange(jsonData.teamweekTaskIds);
+            foreach (int id in teamweekTaskIds) {
+                if (teamweek.RemoveTeamweekTask(id, jsonData.config) || id == 0) {
+                    jsonData.teamweekTaskIds.Remove(id);
+                }
+            }
+
+            List<string> simplicateHourIds = new List<string>();
+            simplicateHourIds.AddRange(jsonData.simplicateTaskIds);
+            foreach (string id in simplicateHourIds) {
+                if (simplicate.RemoveHours(id) || id == null) {
+                    jsonData.simplicateTaskIds.Remove(id);
+                }
+            }
+
             Data planningData = ReadPlanning();
             jsonData.tasks.Clear();
             foreach (Task task in planningData.tasks) {
                 Task tempTask = new Task();
-                tempTask.simplicateId = simplicate.AddHours(task);
-                tempTask.teamweekId = teamweek.AddTeamweekTask(task, jsonData.config);
+                // tempTask.simplicateId = simplicate.AddHours(task);
+                // tempTask.teamweekId = teamweek.AddTeamweekTask(task, jsonData.config);
                 jsonData.tasks.Add(tempTask);
             }
 
@@ -82,11 +98,23 @@ namespace AutoplannerConnections
                     for (int i = 3; i < line.Length; i++) {
                         
                         string[] taskString = line[i].Split('/');
+
+                        DateTime start = TimeStringToDateTime(line[0], line[1]);
+                        DateTime end = TimeStringToDateTime(line[0], line[2]);
+
+                        Task task = new Task() {
+                            start = start, 
+                            end = end, 
+                            hours = (end - start).TotalHours,
+                            employee = cellEmployees[i],
+                            taskString = line[i]
+                        };
+
                         if (taskString.Length > 1) {
 
                             Project project = null;
 
-                            // Find ID in project.json      
+                            // Find IDs in project.json      
                             string projectName = taskString[0].Split('-')[1];
                             foreach (var item in jsonData.projects) {
                                 if (item.name.ToLower().Replace(" ", "").Contains(projectName.ToLower())) {
@@ -95,18 +123,31 @@ namespace AutoplannerConnections
                                 }
                             }
                             
-                            // If ID not found in project.json, try get ID from Teamweek API
+                            // If ID not found in project.json, try get IDs from Teamweek and Simplicate API
                             if (project == null) {
-                                string simplicateId = simplicate.ProjectNameToId(projectName);
+                                string simplicateId = simplicate.GuessIdFromProjectName(projectName);
                                 int teamweekId = teamweek.ProjectNameToId(projectName, jsonData.config);
                                 project = new Project(projectName, teamweekId, simplicateId);
                                 jsonData.projects.Add(project);
                             }
 
-                            data.tasks.Add(new Task(taskString[1], TimeStringToDateTime(line[0], line[1]), TimeStringToDateTime(line[0], line[2]), cellEmployees[i], project));
+                            task.project = project;
+                            task.name = taskString[1];
+
+                            if (project.simplicateId != "" || project.simplicateId != null) {
+                                List<ProjectService> services = simplicate.GetProjectServices(project.simplicateId);
+                                
+                                if (services != null) {
+                                    ProjectService service = services[0];
+                                    task.serviceId = service.id;
+                                    task.hoursTypeId = service.hoursTypes[0].id;
+                                }
+                            }
                         } else {
-                            data.tasks.Add(new Task(taskString[0], TimeStringToDateTime(line[0], line[1]), TimeStringToDateTime(line[0], line[2]), cellEmployees[i]));
+                            task.name = taskString[0];
                         }
+                        
+                        data.tasks.Add(task);
                     }
                 }
             }

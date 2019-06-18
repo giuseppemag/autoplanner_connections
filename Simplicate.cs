@@ -22,18 +22,30 @@ namespace AutoplannerConnections
             request.AddHeader("Authentication-Key",     "guF5DqZqJ8cDxtKe29G6VQjg8pZwN2zT");
             request.AddHeader("Authentication-Secret",  "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K");
 
+            bool hasSimplicateIds = task.project != null && task.project.simplicateId != "" && task.serviceId != "" && task.hoursTypeId != "";
+
             request.AddJsonBody(
                 new { 
                     employee_id         = task.employee.simplicateId,
-                    project_id          = "project:d906c8651701f4304c13c77ab857ae53",   // Todo: Make this value non-static
-                    projectservice_id   = "service:b1df599786b3076dbf0d1878087571b9",   // Todo: Make this value non-static
-                    type_id             = "hourstype:36e980b8e87bd4a3ca9dc23db773baf0", // Todo: Make this value non-static
+
+                    // If task has no Simplicate id's, the hours will be registered as Hoppinger Indirect > Indirect > Diversen
+                    project_id          = hasSimplicateIds
+                                            ? task.project.simplicateId
+                                            : "project:d906c8651701f4304c13c77ab857ae53",
+                    projectservice_id   = hasSimplicateIds
+                                            ? task.serviceId
+                                            : "service:b1df599786b3076dbf0d1878087571b9",
+                    type_id             = hasSimplicateIds
+                                            ? task.hoursTypeId
+                                            : "hourstype:36e980b8e87bd4a3ca9dc23db773baf0",
                     approvalstatus_id   = "approvalstatus:c50aea8b97ac61db",
                     hours               = task.hours,
                     start_date          = task.start.ToString("yyyy-MM-dd HH:mm:ss"),
                     end_date            = task.end.ToString("yyyy-MM-dd HH:mm:ss"),
                     is_time_defined     = true,
-                    note                = task.name,
+                    note                = hasSimplicateIds
+                                            ? task.name
+                                            : task.taskString,
                     source              = "schedule"
                 }
             );
@@ -99,7 +111,7 @@ namespace AutoplannerConnections
         /// <summary>
         /// Returns the ID of the project which name contains the given name
         /// </summary>
-        public string ProjectNameToId (string name) 
+        public string GuessIdFromProjectName (string name) 
         {
             var request = new RestRequest($"api/v2/projects/project", Method.GET);
 
@@ -146,29 +158,34 @@ namespace AutoplannerConnections
             request.AddHeader("Authentication-Secret",  "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K");
 
             request.AddParameter("q[project_id]",   id);
-            request.AddParameter("select",          "[hour_types,name]");
+            request.AddParameter("select",          "[hour_types,name,id]");
 
             IRestResponse response = this.client.Execute(request);
             dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
             List<ProjectService> projectServices = new List<ProjectService>();
-            foreach (var projectService in responseObject["data"])
-            {
-                ProjectService projectServiceObject = new ProjectService() {
-                    id = projectService["id"],
-                    name = projectService["name"],
-                    hoursTypes = new List<HoursType>()
-                };
+            if (responseObject["data"] != null) {
+                foreach (var responseProjectService in responseObject["data"])
+                {
+                    ProjectService projectService = new ProjectService() {
+                        id = responseProjectService["id"],
+                        name = responseProjectService["name"],
+                        hoursTypes = new List<HoursType>()
+                    };
 
-                try {
-                    foreach (var hoursType in projectService["hour_types"])
-                    {
-                        projectServiceObject.hoursTypes.Add(new HoursType() {
-                            id = hoursType["hourstype"]["id"], 
-                            type = hoursType["hourstype"]["type"], 
-                            label = hoursType["hourstype"]["label"]
-                        });
-                    }
-                } catch {}
+                    try {
+                        foreach (var hoursType in responseProjectService["hour_types"])
+                        {
+                            projectService.hoursTypes.Add(new HoursType() {
+                                id = hoursType["hourstype"]["id"], 
+                                type = hoursType["hourstype"]["type"], 
+                                label = hoursType["hourstype"]["label"]
+                            });
+                        }
+                    } catch {}
+                    projectServices.Add(projectService);
+                }
+
+                return projectServices;
             }
             return null;
         }

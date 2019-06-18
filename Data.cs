@@ -49,9 +49,9 @@ namespace AutoplannerConnections
         public void WriteToJson () 
         {
             tasks.ForEach(task => {
-                if (task.teamweekId != -1) this.teamweekTaskIds.Add(task.teamweekId);});
+                if (task.teamweekId != -1 && task.teamweekId != 0) this.teamweekTaskIds.Add(task.teamweekId);});
             tasks.ForEach(task => { 
-                if (task.simplicateId != "") this.simplicateTaskIds.Add(task.simplicateId);});
+                if (task.simplicateId != "" && task.simplicateId != null) this.simplicateTaskIds.Add(task.simplicateId);});
 
             string employeeJson = JsonConvert.SerializeObject(this.employees, Formatting.Indented);
             string projectJson = JsonConvert.SerializeObject(this.projects, Formatting.Indented);
