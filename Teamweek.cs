@@ -84,9 +84,9 @@ namespace AutoplannerConnections
 
             foreach (var employee in responseObject) {
                 string employeeName = ((string)employee["name"]).ToLower().Replace(" ", "");
-                if (employeeName.Contains(firstName.ToLower())) {
+                if (employeeName.Contains(firstName.ToLower().Replace(" ", ""))) {
                     possibleEmployeeId = employee["id"];
-                    if (employeeName.Contains(lastName.ToLower())) {
+                    if (employeeName.Contains(lastName.ToLower().Replace(" ", ""))) {
                         employeeId = possibleEmployeeId;
                         break;
                     }
@@ -94,12 +94,15 @@ namespace AutoplannerConnections
             }
 
             if (employeeId == -1) {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Could not find the Teamweek id for employee name '{firstName} {lastName}'");
-                Console.ResetColor();
-                return -1;
+                if (possibleEmployeeId == -1) {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Could not find the Teamweek id for employee name '{firstName} {lastName}'");
+                    Console.ResetColor();
+                    return -1;
+                } else {
+                    return possibleEmployeeId;
+                }
             }
-
             return employeeId;
         }
 

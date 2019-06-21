@@ -40,8 +40,8 @@ namespace AutoplannerConnections
             jsonData.tasks.Clear();
             foreach (Task task in planningData.tasks) {
                 Task tempTask = new Task();
-                // tempTask.simplicateId = simplicate.AddHours(task);
-                // tempTask.teamweekId = teamweek.AddTeamweekTask(task, jsonData.config);
+                tempTask.simplicateId = simplicate.AddHours(task);
+                tempTask.teamweekId = teamweek.AddTeamweekTask(task, jsonData.config);
                 jsonData.tasks.Add(tempTask);
             }
 
