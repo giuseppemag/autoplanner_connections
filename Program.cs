@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace AutoplannerConnections
 {
@@ -15,15 +16,19 @@ namespace AutoplannerConnections
             jsonData = new Data(fromJson: true);
 
             teamweek = new Teamweek();
+            teamweek.accessToken = jsonData.config.twAccessToken;
+            teamweek.refreshToken = jsonData.config.twRefreshToken;
+            teamweek.secretBase = jsonData.config.twSecretBase;
+
             simplicate = new Simplicate();
 
             // Needs to be called at least once every 2 weeks (before refresh token expires and is unusable)
-            teamweek.RefreshAccessToken(ref jsonData.config);
+            teamweek.RefreshAccessToken();
 
             List<int> teamweekTaskIds = new List<int>();
             teamweekTaskIds.AddRange(jsonData.teamweekTaskIds);
             foreach (int id in teamweekTaskIds) {
-                if (teamweek.RemoveTeamweekTask(id, jsonData.config) || id == 0) {
+                if (teamweek.RemoveTeamweekTask(id) || id == 0) {
                     jsonData.teamweekTaskIds.Remove(id);
                 }
             }
@@ -41,8 +46,8 @@ namespace AutoplannerConnections
             jsonData.tasks.Clear();
             foreach (Task task in planningData.tasks) {
                 Task tempTask = new Task();
-                tempTask.simplicateId = simplicate.AddHours(task);
-                tempTask.teamweekId = teamweek.AddTeamweekTask(task, jsonData.config);
+                // tempTask.simplicateId = simplicate.AddHours(task);
+                // tempTask.teamweekId = teamweek.AddTeamweekTask(task);
                 jsonData.tasks.Add(tempTask);
             }
 
@@ -87,7 +92,7 @@ namespace AutoplannerConnections
                     // If employee not found in employee.json, try get Teamweek and Simplicate ID
                     if (employee == null) {
                         string simplicateId = simplicate.EmployeeNameToId(firstName, lastName);
-                        int teamweekId = teamweek.EmployeeNameToId(firstName, lastName, jsonData.config);
+                        int teamweekId = teamweek.EmployeeNameToId(firstName, lastName);
                         employee = new Employee(firstName, lastName, teamweekId, simplicateId);
                         jsonData.employees.Add(employee);
                     }
@@ -135,7 +140,7 @@ namespace AutoplannerConnections
                             // If ID not found in project.json, try get IDs from Teamweek and Simplicate API
                             if (project == null) {
                                 string simplicateId = simplicate.GuessIdFromProjectName(projectName);
-                                int teamweekId = teamweek.ProjectNameToId(projectName, jsonData.config);
+                                int teamweekId = teamweek.ProjectNameToId(projectName);
                                 project = new Project(projectName, teamweekId, simplicateId);
                                 jsonData.projects.Add(project);
                             }

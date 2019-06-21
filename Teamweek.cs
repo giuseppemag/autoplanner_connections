@@ -6,8 +6,11 @@ namespace AutoplannerConnections
 {
     class Teamweek
     {
+        public string secretBase;
+        public string accessToken;
+        public string refreshToken;
 
-        public RestClient client;
+        private RestClient client;
 
         public Teamweek () {
             client = new RestClient("https://teamweek.com");
@@ -16,12 +19,12 @@ namespace AutoplannerConnections
         /// <summary>
         /// Adds the given task to the Teamweek environment 
         /// </summary>
-        public int AddTeamweekTask (Task task, Config config) 
+        public int AddTeamweekTask (Task task) 
         {
 
             if (task.employee.teamweekId != -1) {
-                var request = new RestRequest($"api/v4/147174/tasks?access_token={config.twAccessToken}", Method.POST);
-                request.AddParameter("access_token", config.twAccessToken);
+                var request = new RestRequest($"api/v4/147174/tasks?access_token={accessToken}", Method.POST);
+                request.AddParameter("access_token", accessToken);
                 request.AddParameter("name", task.name);
                 request.AddParameter("start_date", task.start.ToString("yyyy-MM-dd"));
                 request.AddParameter("end_date", task.end.ToString("yyyy-MM-dd"));
@@ -42,10 +45,10 @@ namespace AutoplannerConnections
         /// <summary>
         /// Removes a task with the given `id`. Returns true on success
         /// </summary>
-        public bool RemoveTeamweekTask (int taskId, Config config)
+        public bool RemoveTeamweekTask (int taskId)
         {
             var request = new RestRequest($"api/v4/147174/tasks/{taskId}", Method.DELETE);
-            request.AddParameter("access_token", config.twAccessToken);
+            request.AddParameter("access_token", accessToken);
 
             IRestResponse response = client.Execute(request);
             return response.IsSuccessful || response.StatusDescription == "Not Found";
@@ -55,26 +58,26 @@ namespace AutoplannerConnections
         /// <summary>
         /// Needs to be called at least once every 2 weeks, to prevent the `RefreshAccessToken` to expire
         /// </summary>
-        public void RefreshAccessToken(ref Config config)
+        public void RefreshAccessToken()
         {
-            var request = new RestRequest($"api/v3/authenticate/token?grant_type=refresh_token&refresh_token={config.twRefreshToken}", Method.POST);
-            request.AddHeader("Authorization", config.twSecretBase);
+            var request = new RestRequest($"api/v3/authenticate/token?grant_type=refresh_token&refresh_token={refreshToken}", Method.POST);
+            request.AddHeader("Authorization", secretBase);
             request.AddParameter("grant_type", "refresh_token");
-            request.AddParameter("refresh_token", config.twRefreshToken);
+            request.AddParameter("refresh_token", refreshToken);
 
             IRestResponse response = client.Execute(request);
             var responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
-            config.twAccessToken = responseObject["access_token"];
-            config.twRefreshToken = responseObject["refresh_token"];
+            accessToken = responseObject["access_token"];
+            refreshToken = responseObject["refresh_token"];
         }
         
         /// <summary>
         /// Returns the Teamweek `id` of the employee whose name contains the given name
         /// </summary>
-        public int EmployeeNameToId (string firstName, string lastName, Config config) 
+        public int EmployeeNameToId (string firstName, string lastName) 
         {
-            var request = new RestRequest($"api/v4/147174/members?access_token={config.twAccessToken}");
-            request.AddHeader("authorization", $"Bearer {config.twAccessToken}");
+            var request = new RestRequest($"api/v4/147174/members?access_token={accessToken}");
+            request.AddHeader("authorization", $"Bearer {accessToken}");
 
             IRestResponse response = client.Execute(request);
             var responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
@@ -109,10 +112,10 @@ namespace AutoplannerConnections
         /// <summary>
         /// Returns the Teamweek `id` of the project which name contains the given name
         /// </summary>
-        public int ProjectNameToId (string name, Config config) 
+        public int ProjectNameToId (string name) 
         {
-            var request = new RestRequest($"api/v4/147174/projects?access_token={config.twAccessToken}");
-            request.AddHeader("authorization", $"Bearer {config.twAccessToken}");
+            var request = new RestRequest($"api/v4/147174/projects?access_token={accessToken}");
+            request.AddHeader("authorization", $"Bearer {accessToken}");
 
             IRestResponse response = client.Execute(request);
             var responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);

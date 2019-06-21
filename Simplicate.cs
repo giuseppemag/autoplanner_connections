@@ -8,11 +8,14 @@ namespace AutoplannerConnections
     class Simplicate
     {
 
-        public RestClient client;
+        private RestClient client;
+        public const string url = "https://hoppingerdemo2.simplicate.nl";
+        public const string authenticationKey = "guF5DqZqJ8cDxtKe29G6VQjg8pZwN2zT";
+        public const string authenticationSecret = "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K";
         
         public Simplicate () 
         {
-            client = new RestClient("https://hoppingerdemo2.simplicate.nl");
+            client = new RestClient(url);
         }
 
         /// <summary>
@@ -20,13 +23,9 @@ namespace AutoplannerConnections
         /// </summary>
         public string AddHours (Task task) 
         {
-            var request = new RestRequest($"api/v2/hours/hours", Method.POST);
-
-            request.AddHeader("Authentication-Key",     "guF5DqZqJ8cDxtKe29G6VQjg8pZwN2zT");
-            request.AddHeader("Authentication-Secret",  "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K");
-
             bool hasSimplicateIds = task.project != null && task.project.simplicateId != "" && task.serviceId != "" && task.hoursTypeId != "";
 
+            var request = CreateRequest($"api/v2/hours/hours", Method.POST);
             request.AddJsonBody(
                 new { 
                     employee_id         = task.employee.simplicateId,
@@ -66,10 +65,7 @@ namespace AutoplannerConnections
         /// </summary>
         public bool RemoveHours (string taskId) 
         {
-            var request = new RestRequest($"api/v2/hours/hours/{taskId}", Method.DELETE);
-
-            request.AddHeader("Authentication-Key",     "guF5DqZqJ8cDxtKe29G6VQjg8pZwN2zT");
-            request.AddHeader("Authentication-Secret",  "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K");
+            var request = CreateRequest($"api/v2/hours/hours/{taskId}", Method.DELETE);
 
             IRestResponse response = client.Execute(request);
             return response.IsSuccessful || response.StatusDescription == "Not Found";
@@ -80,11 +76,7 @@ namespace AutoplannerConnections
         /// </summary>
         public string EmployeeNameToId (string firstName, string lastName) 
         {
-            var request = new RestRequest($"api/v2/hrm/employee", Method.GET);
-
-            request.AddHeader("Authentication-Key",     "guF5DqZqJ8cDxtKe29G6VQjg8pZwN2zT");
-            request.AddHeader("Authentication-Secret",  "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K");
-
+            var request = CreateRequest($"api/v2/hrm/employee", Method.GET);
             request.AddParameter("q[name]", $"*{firstName}*");
             request.AddParameter("q[name]", $"*{lastName}*");
 
@@ -120,11 +112,7 @@ namespace AutoplannerConnections
         /// </summary>
         public string GuessIdFromProjectName (string name) 
         {
-            var request = new RestRequest($"api/v2/projects/project", Method.GET);
-
-            request.AddHeader("Authentication-Key",     "guF5DqZqJ8cDxtKe29G6VQjg8pZwN2zT");
-            request.AddHeader("Authentication-Secret",  "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K");
-
+            var request = CreateRequest($"api/v2/projects/project", Method.GET);
             request.AddParameter("q[name]", $"*{name}*");
 
             IRestResponse response = this.client.Execute(request);
@@ -145,10 +133,7 @@ namespace AutoplannerConnections
         /// </summary>
         public List<Project> GetProjects () 
         {
-            var request = new RestRequest($"api/v2/projects/project", Method.GET);
-
-            request.AddHeader("Authentication-Key",     "guF5DqZqJ8cDxtKe29G6VQjg8pZwN2zT");
-            request.AddHeader("Authentication-Secret",  "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K");
+            var request = CreateRequest($"api/v2/projects/project", Method.GET);
 
             IRestResponse response = this.client.Execute(request);
             dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
@@ -165,11 +150,7 @@ namespace AutoplannerConnections
         /// </summary>
         public List<ProjectService> GetProjectServices (string id) 
         {
-            var request = new RestRequest($"api/v2/projects/service", Method.GET);
-
-            request.AddHeader("Authentication-Key",     "guF5DqZqJ8cDxtKe29G6VQjg8pZwN2zT");
-            request.AddHeader("Authentication-Secret",  "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K");
-
+            var request = CreateRequest($"api/v2/projects/service", Method.GET);
             request.AddParameter("q[project_id]",   id);
             request.AddParameter("select",          "[hour_types,name,id]");
 
@@ -201,6 +182,13 @@ namespace AutoplannerConnections
                 return projectServices;
             }
             return null;
+        }
+
+        private IRestRequest CreateRequest(string location, Method method) {
+            IRestRequest request = new RestRequest(location, method);
+            request.AddHeader("Authentication-Key", authenticationKey);
+            request.AddHeader("Authentication-Secret", authenticationSecret);
+            return request;
         }
     }
 }
