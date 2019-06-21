@@ -78,14 +78,15 @@ namespace AutoplannerConnections
         /// <summary>
         /// Returns the ID of the employee whose name contains the given name
         /// </summary>
-        public string EmployeeNameToId (string name) 
+        public string EmployeeNameToId (string firstName, string lastName) 
         {
             var request = new RestRequest($"api/v2/hrm/employee", Method.GET);
 
             request.AddHeader("Authentication-Key",     "guF5DqZqJ8cDxtKe29G6VQjg8pZwN2zT");
             request.AddHeader("Authentication-Secret",  "m5PQlF6VD8o1sY5kXChJiqPhGFEjx33K");
 
-            request.AddParameter("q[name]", $"*{name}*");
+            request.AddParameter("q[name]", $"*{firstName}*");
+            request.AddParameter("q[name]", $"*{lastName}*");
 
             IRestResponse response = this.client.Execute(request);
             dynamic responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
@@ -101,12 +102,12 @@ namespace AutoplannerConnections
 
             if (employeeId == null) {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Could not find the Teamweek id for employee name '{name}'");
+                Console.WriteLine($"Could not find the Simplicate id for employee name '{firstName}'");
                 Console.ResetColor();
                 return null;
             } else if (multipleNames) {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Multiple employees have the name '{name}'");
+                Console.WriteLine($"Multiple Simplicate employees have the name '{firstName}'");
                 Console.ResetColor();
                 return null;
             }

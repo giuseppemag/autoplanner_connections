@@ -67,12 +67,17 @@ namespace AutoplannerConnections
                 for (int i = 3; i < line.Length; i++) {
 
                     // Get employee names from first line
-                    string employeeName = line[i].Trim();
                     Employee employee = null;
+                    string[] names = line[i].Trim().Split('-');
+                    string firstName = names[0];
+                    string lastName = names[1];
 
                     // Get employee from Json 
                     foreach (var item in jsonData.employees) {
-                        if (item.name.ToLower().Replace(" ", "").Contains(employeeName.ToLower()) && item.teamweekId > 0) {
+                        if (item.firstName == firstName && 
+                            item.lastName == lastName && 
+                            item.teamweekId > 0
+                        ) {
                             employee = item;
                             break;
                         }
@@ -80,9 +85,9 @@ namespace AutoplannerConnections
 
                     // If employee not found in employee.json, try get Teamweek and Simplicate ID
                     if (employee == null) {
-                        string simplicateId = simplicate.EmployeeNameToId(employeeName);
-                        int teamweekId = teamweek.EmployeeNameToId(employeeName, jsonData.config);
-                        employee = new Employee(employeeName, teamweekId, simplicateId);
+                        string simplicateId = simplicate.EmployeeNameToId(firstName, lastName);
+                        int teamweekId = teamweek.EmployeeNameToId(firstName, lastName, jsonData.config);
+                        employee = new Employee(firstName, lastName, teamweekId, simplicateId);
                         jsonData.employees.Add(employee);
                     }
                     

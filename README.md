@@ -8,7 +8,7 @@ Because of the current method of "guessing" the name, errors may occur when 2 em
 The `csv` requires to be names `plannings.csv`. Any other name for the csv will not work.
 
 ## Teamweek
-Because of how the Teamweek auth keys work, the tool needs to run at least once every 2 weeks. If the time between runs takes longer then 2 weeks, a new refresh token is required for it to work again.
+Because of how the Teamweek authentication keys work, the tool needs to run at least once every 2 weeks. If the time between runs takes longer then 2 weeks, a new refresh token is required for it to work again.
 
 ## Simplicate
 Adding hours to the Simplicate API requires an `id` for not only the project and employee, but also for the `service` and `hoursType`. Every project has a different name for the service and hoursType. Therefor we currently acquire all services and hourstypes for the given project and we then pick the first of both these values, so the employee can change these values themselves.

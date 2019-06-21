@@ -71,7 +71,7 @@ namespace AutoplannerConnections
         /// <summary>
         /// Returns the Teamweek `id` of the employee whose name contains the given name
         /// </summary>
-        public int EmployeeNameToId (string name, Config config) 
+        public int EmployeeNameToId (string firstName, string lastName, Config config) 
         {
             var request = new RestRequest($"api/v4/147174/members?access_token={config.twAccessToken}");
             request.AddHeader("authorization", $"Bearer {config.twAccessToken}");
@@ -79,24 +79,23 @@ namespace AutoplannerConnections
             IRestResponse response = client.Execute(request);
             var responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
+            int possibleEmployeeId = -1;
             int employeeId = -1;
-            bool multipleNames = false;
 
-            foreach (var employee in responseObject)
-                if (((string)employee["name"]).ToString().ToLower().Replace(" ", "").Contains(name.ToLower().Replace(" ", "")))
-                    if (employeeId == -1)
-                        employeeId = employee["id"];
-                    else
-                        multipleNames = true;
+            foreach (var employee in responseObject) {
+                string employeeName = ((string)employee["name"]).ToLower().Replace(" ", "");
+                if (employeeName.Contains(firstName.ToLower())) {
+                    possibleEmployeeId = employee["id"];
+                    if (employeeName.Contains(lastName.ToLower())) {
+                        employeeId = possibleEmployeeId;
+                        break;
+                    }
+                }
+            }
 
             if (employeeId == -1) {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Could not find the Teamweek id for employee name '{name}'");
-                Console.ResetColor();
-                return -1;
-            } else if (multipleNames) {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Multiple employees have the name '{name}'");
+                Console.WriteLine($"Could not find the Teamweek id for employee name '{firstName} {lastName}'");
                 Console.ResetColor();
                 return -1;
             }
