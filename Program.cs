@@ -28,6 +28,7 @@ namespace AutoplannerConnections
                 }
             }
 
+            // remove current tasks to be able to add them again (used for testing purposes)
             List<string> simplicateHourIds = new List<string>();
             simplicateHourIds.AddRange(jsonData.simplicateTaskIds);
             foreach (string id in simplicateHourIds) {
